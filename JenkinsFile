@@ -9,7 +9,8 @@ pipeline {
   environment {
     IMAGE_NAME = "lavanyags88/hello-spring"
     DOCKER_HUB_CRED = credentials('docker')
-    DEPLOY_SERVER_PROD = "ubuntu@54.186.200.158"    // Replace with your prod EC2 IP
+    DEPLOY_SERVER_PROD = "ubuntu@54.186.200.158" // Replace with your prod EC2 IP
+    SONAR_AUTH_TOKEN = credentials('sonarqube') // SonarQube token stored in Jenkins
   }
 
   stages {
@@ -31,13 +32,23 @@ pipeline {
       }
     }
 
-    stage('Dependency Vulnerability Scan') {
+    stage('SonarQube Analysis') {
       steps {
-        echo "🔎 Scanning project dependencies with Trivy..."
+        echo "🔍 Running SonarQube Analysis..."
         sh '''
-          trivy fs --exit-code 0 --severity HIGH,CRITICAL . > trivy-deps-report.txt
-          echo "🔍 Dependency scan complete. Results saved to trivy-deps-report.txt"
+          mvn sonar:sonar \
+            -Dsonar.projectKey=hello-spring \
+            -Dsonar.host.url=http://<SONARQUBE-IP>:9000 \
+            -Dsonar.login=$SONAR_AUTH_TOKEN
         '''
+      }
+    }
+
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 5, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
       }
     }
 
@@ -57,7 +68,7 @@ pipeline {
       steps {
         echo "🛡️ Scanning Docker image for vulnerabilities using Trivy..."
         sh '''
-          trivy image --exit-code 0 --severity HIGH,CRITICAL $IMAGE_NAME:${BUILD_NUMBER} > trivy-image-report.txt
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL $IMAGE_NAME:${BUILD_NUMBER} > trivy-image-report.txt
           echo "🔍 Trivy image scan complete. Results saved to trivy-image-report.txt"
         '''
       }
@@ -102,20 +113,21 @@ pipeline {
 
   post {
     always {
-      echo "📦 Archiving Trivy reports..."
-      archiveArtifacts artifacts: 'trivy-deps-report.txt,trivy-image-report.txt', fingerprint: true
+      echo "📦 Archiving Trivy report..."
+      archiveArtifacts artifacts: 'trivy-image-report.txt', fingerprint: true
     }
 
     success {
       echo "✅ CI/CD Pipeline executed successfully — App deployed to Production!"
-      slackSend channel: '#devops-alerts', color: 'good', message: "✅ Build #${BUILD_NUMBER} succeeded! - ${JOB_NAME}"
+      emailext subject: "✅ Build #${BUILD_NUMBER} Succeeded - ${JOB_NAME}",
+               body: "Build and deployment completed successfully. Check SonarQube and Trivy reports for details.",
+               to: "lavanya@example.com"
     }
 
     failure {
       echo "❌ Build or Deployment failed. Check Jenkins logs for details."
-      slackSend channel: '#devops-alerts', color: 'danger', message: "❌ Build #${BUILD_NUMBER} failed! - ${JOB_NAME}"
       emailext subject: "❌ Build #${BUILD_NUMBER} Failed - ${JOB_NAME}",
-               body: "Please check the Jenkins console output for details.",
+               body: "Build failed. Check Jenkins console output and SonarQube report for details.",
                to: "gslavanyagowda@gmail.com"
     }
   }
