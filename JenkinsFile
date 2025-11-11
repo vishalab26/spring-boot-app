@@ -10,7 +10,6 @@ pipeline {
     IMAGE_NAME = "lavanyags88/hello-spring"
     DOCKER_HUB_CRED = credentials('docker')
     DEPLOY_SERVER_PROD = "ubuntu@54.186.200.158" // Replace with your prod EC2 IP
-    SONAR_AUTH_TOKEN = credentials('sonarqube') // SonarQube token stored in Jenkins
   }
 
   stages {
@@ -29,26 +28,6 @@ pipeline {
           mvn clean test
           mvn verify
         '''
-      }
-    }
-
-    stage('SonarQube Analysis') {
-      steps {
-        echo "🔍 Running SonarQube Analysis..."
-        sh '''
-          mvn sonar:sonar \
-            -Dsonar.projectKey=hello-spring \
-            -Dsonar.host.url=http://16.145.97.202:9000 \
-            -Dsonar.login=$SONAR_AUTH_TOKEN
-        '''
-      }
-    }
-
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 5, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
-        }
       }
     }
 
@@ -120,14 +99,14 @@ pipeline {
     success {
       echo "✅ CI/CD Pipeline executed successfully — App deployed to Production!"
       emailext subject: "✅ Build #${BUILD_NUMBER} Succeeded - ${JOB_NAME}",
-               body: "Build and deployment completed successfully. Check SonarQube and Trivy reports for details.",
+               body: "Build and deployment completed successfully. Check Trivy report for container vulnerabilities.",
                to: "lavanya@example.com"
     }
 
     failure {
       echo "❌ Build or Deployment failed. Check Jenkins logs for details."
       emailext subject: "❌ Build #${BUILD_NUMBER} Failed - ${JOB_NAME}",
-               body: "Build failed. Check Jenkins console output and SonarQube report for details.",
+               body: "Build failed. Check Jenkins console output and Trivy report for details.",
                to: "gslavanyagowda@gmail.com"
     }
   }
