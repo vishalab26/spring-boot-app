@@ -9,7 +9,7 @@ pipeline {
   environment {
     IMAGE_NAME = "lavanyags88/hello-spring"
     DOCKER_HUB_CRED = credentials('docker')
-    DEPLOY_SERVER_PROD = "ubuntu@54.186.200.158" // Replace with your prod EC2 IP
+    DEPLOY_SERVER_PROD = "ubuntu@34.218.50.241" // Replace with your prod EC2 IP
   }
 
   stages {
@@ -17,13 +17,13 @@ pipeline {
     stage('Checkout') {
       steps {
         checkout scm
-        sh 'echo ✅ Code checkout completed'
+        sh 'echo Code checkout completed'
       }
     }
 
     stage('Run Unit & Integration Tests') {
       steps {
-        echo "🧪 Running Maven Unit and Integration Tests..."
+        echo "Running Maven Unit and Integration Tests..."
         sh '''
           mvn clean test
           mvn verify
@@ -33,7 +33,7 @@ pipeline {
 
     stage('Build & Push Docker Image') {
       steps {
-        echo "🐳 Building and Pushing Docker image..."
+        echo "Building and Pushing Docker image..."
         sh '''
           docker build -t $IMAGE_NAME:${BUILD_NUMBER} .
           echo "$DOCKER_HUB_CRED_PSW" | docker login -u "$DOCKER_HUB_CRED_USR" --password-stdin
@@ -45,17 +45,17 @@ pipeline {
 
     stage('Container Vulnerability Scan') {
       steps {
-        echo "🛡️ Scanning Docker image for vulnerabilities using Trivy..."
+        echo "Scanning Docker image for vulnerabilities using Trivy..."
         sh '''
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL $IMAGE_NAME:${BUILD_NUMBER} > trivy-image-report.txt
-          echo "🔍 Trivy image scan complete. Results saved to trivy-image-report.txt"
+          echo "Trivy image scan complete. Results saved to trivy-image-report.txt"
         '''
       }
     }
 
     stage('Deploy to Staging (Jenkins Server)') {
       steps {
-        echo "🚀 Deploying to Staging Environment on Jenkins server..."
+        echo "Deploying to Staging Environment on Jenkins server..."
         sh '''
           docker pull $IMAGE_NAME:${BUILD_NUMBER}
           docker stop hello-spring-staging || true
@@ -68,14 +68,14 @@ pipeline {
     stage('Approval for Production Deploy') {
       steps {
         script {
-          input message: '✅ Staging looks good? Approve deployment to Production?', ok: 'Deploy to Prod'
+          input message: 'Staging looks good? Approve deployment to Production?', ok: 'Deploy to Prod'
         }
       }
     }
 
     stage('Deploy to Production Environment') {
       steps {
-        echo "🚀 Deploying to Production..."
+        echo "Deploying to Production..."
         sshagent(['ssh-key']) {
           sh '''
             ssh -o StrictHostKeyChecking=no $DEPLOY_SERVER_PROD "
@@ -92,20 +92,20 @@ pipeline {
 
   post {
     always {
-      echo "📦 Archiving Trivy report..."
+      echo "Archiving Trivy report..."
       archiveArtifacts artifacts: 'trivy-image-report.txt', fingerprint: true
     }
 
     success {
-      echo "✅ CI/CD Pipeline executed successfully — App deployed to Production!"
-      emailext subject: "✅ Build #${BUILD_NUMBER} Succeeded - ${JOB_NAME}",
+      echo "CI/CD Pipeline executed successfully — App deployed to Production!"
+      emailext subject: "Build #${BUILD_NUMBER} Succeeded - ${JOB_NAME}",
                body: "Build and deployment completed successfully. Check Trivy report for container vulnerabilities.",
                to: "lavanya@example.com"
     }
 
     failure {
-      echo "❌ Build or Deployment failed. Check Jenkins logs for details."
-      emailext subject: "❌ Build #${BUILD_NUMBER} Failed - ${JOB_NAME}",
+      echo "Build or Deployment failed. Check Jenkins logs for details."
+      emailext subject: "Build #${BUILD_NUMBER} Failed - ${JOB_NAME}",
                body: "Build failed. Check Jenkins console output and Trivy report for details.",
                to: "gslavanyagowda@gmail.com"
     }
