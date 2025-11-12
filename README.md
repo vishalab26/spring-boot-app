@@ -46,4 +46,9 @@ The pipeline automates build, testing, vulnerability scanning, and deployment to
 ## Project Structure
 <img width="453" height="372" alt="image" src="https://github.com/user-attachments/assets/5986bf2c-bcba-4513-944e-67bc65c2f39e" />
 
+## Deployment Verification
+- Staging URL: http://<Jenkins-Server-IP>:8081
+  
+- Production URL: http://<EC2-Public-IP>
+
 
