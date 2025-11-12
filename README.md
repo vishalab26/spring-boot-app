@@ -53,5 +53,8 @@ The pipeline automates build, testing, vulnerability scanning, and deployment to
 - Production URL: http://Deployment public ip
   <img width="1365" height="687" alt="image" src="https://github.com/user-attachments/assets/8e8bed0d-03f1-4eae-8dae-d92c823d59ef" />
 
+## Reports
+- **Trivy Scan Report**: Available in Jenkins artifacts
+
 
 
