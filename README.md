@@ -48,7 +48,10 @@ The pipeline automates build, testing, vulnerability scanning, and deployment to
 
 ## Deployment Verification
 - Staging URL: http://<Jenkins-Server-IP>:8081
-  
+  <img width="1364" height="688" alt="image" src="https://github.com/user-attachments/assets/65f97f9f-d3ef-4924-9511-8dd9a6637e2f" />
+
 - Production URL: http://<EC2-Public-IP>
+  <img width="1365" height="687" alt="image" src="https://github.com/user-attachments/assets/8e8bed0d-03f1-4eae-8dae-d92c823d59ef" />
+
 
 
