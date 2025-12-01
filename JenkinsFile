@@ -75,7 +75,7 @@ pipeline {
     stage('Deploy to Production Environment') {
       steps {
         echo "Deploying to Production..."
-        sshagent(['ssh-key']) {
+        sshagent(['ssh']) {
           sh '''
             ssh -o StrictHostKeyChecking=no $DEPLOY_SERVER_PROD "
               docker pull $IMAGE_NAME:${BUILD_NUMBER} &&
