@@ -49,12 +49,13 @@ The pipeline automates build, testing, vulnerability scanning, and deployment to
 ## Deployment Verification
 
 - Staging URL: http://Jenkins Public IP:8081
-  
-  <img width="1364" height="688" alt="image" src="https://github.com/user-attachments/assets/65f97f9f-d3ef-4924-9511-8dd9a6637e2f" />
+
+  <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/0e8f65dc-9b9b-44ec-99fc-897d6d7ef01f" />
+
 
 - Production URL: http://Deployment public ip
   
-  <img width="1365" height="687" alt="image" src="https://github.com/user-attachments/assets/8e8bed0d-03f1-4eae-8dae-d92c823d59ef" />
+  <img width="1366" height="765" alt="image" src="https://github.com/user-attachments/assets/698ae202-7b6c-492d-babc-af3484d6e6bd" />
 
 ## Reports
 - **Trivy Scan Report**: Available in Jenkins artifacts
