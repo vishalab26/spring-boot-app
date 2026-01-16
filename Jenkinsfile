@@ -17,7 +17,7 @@ pipeline {
 
         stage('Build & Package') {
             tools {
-                maven 'Maven 3'  // Make sure Maven is installed in Jenkins Tools
+                maven 'maven3  // Make sure Maven is installed in Jenkins Tools
             }
             steps {
                 sh 'mvn clean package -DskipTests'
