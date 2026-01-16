@@ -31,14 +31,15 @@ pipeline {
             }
         }
 
-        stage('Docker Push') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker push $DOCKER_USER/spring-boot-app:latest'
-                }
-            }
+stage('Docker Push') {
+    steps {
+        withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
+            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+            sh 'docker push $DOCKER_USER/spring-boot-app:latest'
         }
+    }
+}
+
 
         stage('Trivy Scan') {
             steps {
