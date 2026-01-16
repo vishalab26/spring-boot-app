@@ -102,5 +102,5 @@ http://<PRODUCTION_EC2_PUBLIC_IP>:8080
 
 **Vishal**  
 GitHub: https://github.com/vishalab26  
-Email: vishalmath2605@gmail.com
+Email: vishalmath56@gmail.com
 
