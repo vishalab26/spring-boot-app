@@ -1,64 +1,103 @@
-# CI/CD Pipeline for Spring Boot Application
+# CI/CD Pipeline for Spring Boot Application 🚀
 
 ## Overview
-This project demonstrates a complete **CI/CD pipeline** using **Jenkins**, deploying a **Spring Boot** application on AWS EC2 with Docker.  
-The pipeline automates build, testing, vulnerability scanning, and deployment to staging and production environments.
+This project demonstrates a complete **CI/CD pipeline** for a **Spring Boot application** using **Jenkins**, **Docker**, and **AWS EC2**.
+
+The pipeline automates:
+- Build & packaging
+- Docker image creation
+- Image push to Docker Hub
+- Vulnerability scanning using Trivy
+- Deployment to staging and production environments
 
 ---
 
 ## Tech Stack
+
 | Purpose | Tool |
-|----------|------|
+|-------|------|
 | CI/CD | Jenkins |
 | Source Control | GitHub |
 | Build Tool | Maven |
 | Containerization | Docker |
 | Image Registry | Docker Hub |
-| Security Scanning | Trivy |
-| Cloud Provider | AWS EC2 |
+| Security Scan | Trivy |
+| Cloud | AWS EC2 |
 | Notifications | Jenkins Email Extension |
 
 ---
 
-## Pipeline Workflow
+## CI/CD Pipeline Flow
 
-1. **Checkout Code** — Pulls latest code from GitHub.  
-2. **Build & Test** — Executes Maven unit and integration tests.  
-3. **Docker Build & Push** — Builds Docker image and pushes it to Docker Hub.  
-4. **Trivy Scan** — Scans the image for vulnerabilities (HIGH, CRITICAL).  
-5. **Deploy to Staging (Jenkins Server)** — Runs the app container on port `8081`.  
-6. **Manual Approval** — Waits for user input to continue deployment.  
-7. **Deploy to Production (EC2)** — Runs container on port `80`.  
-8. **Email Notifications** — Sends success or failure email to configured address.  
+1. Checkout source code from GitHub  
+2. Build Spring Boot application using Maven  
+3. Create Docker image  
+4. Push image to Docker Hub  
+5. Scan Docker image using Trivy  
+6. Deploy application to **Staging (port 8081)**  
+7. Manual approval step  
+8. Deploy application to **Production**
 
 ---
 
-## Jenkins Configuration
+## Jenkins Credentials Used
 
-### Required Credentials
-| ID | Type | Purpose |
-|----|------|----------|
-| `docker` | Username & Password | Docker Hub login |
-| `ssh-key` | SSH Username with Private Key | EC2 connection |
+| Credential ID | Type | Purpose |
+|--------------|------|--------|
+| `dockerhub` | Username & Password | Docker Hub login |
+| `ssh-key` | SSH Private Key | EC2 access |
 
 ---
 
 ## Project Structure
-<img width="453" height="372" alt="image" src="https://github.com/user-attachments/assets/5986bf2c-bcba-4513-944e-67bc65c2f39e" />
+
+
+spring-boot-app/
+├── Dockerfile
+├── Jenkinsfile
+├── pom.xml
+├── src/
+├── images/
+│ ├── app-home.png
+│ └── app-health.png
+└── README.md
+
+
+---
 
 ## Deployment Verification
 
-- Staging URL: http://Jenkins Public IP:8081
+### ✅ Staging Environment
 
-  <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/0e8f65dc-9b9b-44ec-99fc-897d6d7ef01f" />
+**URL:**  
+http://<JENKINS_PUBLIC_IP>:8081
 
+**Screenshot:**  
+![Spring Boot App - Staging](images/app-home.png)
 
-- Production URL: http://Deployment public ip
-  
-  <img width="1366" height="765" alt="image" src="https://github.com/user-attachments/assets/698ae202-7b6c-492d-babc-af3484d6e6bd" />
+---
 
-## Reports
-- **Trivy Scan Report**: Available in Jenkins artifacts
+### ✅ Production Environment
 
+**URL:**  
+http://<PRODUCTION_EC2_PUBLIC_IP>:8080
 
+**Screenshot:**  
+![Spring Boot App - Production](images/app-health.png)
+
+---
+
+## Security Scan Report
+
+- Docker image scanned using **Trivy**
+- Report archived as Jenkins artifact  
+- File: `trivy-image-report.txt`
+
+---
+
+## Author
+
+**Vishal**  
+GitHub: https://github.com/vishalab26  
+Email: vishalmath2605@gmail.com
 
