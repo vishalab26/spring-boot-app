@@ -1,0 +1,14 @@
+# Maven
+target/
+
+# Jenkins / temp
+.Jenkinsfile.swp
+
+# Trivy / binaries
+bin/
+*.bin
+
+# OS files
+*.log
+*.tmp
+
