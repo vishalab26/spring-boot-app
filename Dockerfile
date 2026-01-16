@@ -2,8 +2,7 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /opt/app
 
-ARG artifact=target/*.jar
-COPY ${artifact} app.jar
+COPY target/spring-boot-web.jar app.jar
 
 EXPOSE 8080
 
