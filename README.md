@@ -61,6 +61,7 @@ spring-boot-app/
 │ ├── app-home.png
 │ └── app-health.png
 └── README.md
+<img width="707" height="691" alt="image" src="https://github.com/user-attachments/assets/b6dc7256-28f3-4b6c-8e73-ff37b54050f7" />
 
 
 ---
