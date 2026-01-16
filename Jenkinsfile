@@ -3,22 +3,23 @@ pipeline {
 
     environment {
         DOCKER_USER = 'vishalmath2605'
-        DOCKER_PASS = credentials('docker-hub-password') // store your Docker password in Jenkins credentials
-        EMAIL_RECIPIENT = 'vishalmath2605@gmail.com'
+        DOCKER_PASS = credentials('dockerhub-password') // Add in Jenkins credentials
+        EMAIL = 'vishalmath2605@gmail.com'
+    }
+
+    // Make sure Maven is installed in Jenkins Tools
+    tools {
+        maven 'maven3'
     }
 
     stages {
-
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/vishalab26/spring-boot-app.git'
             }
         }
 
         stage('Build & Package') {
-            tools {
-                maven 'maven3  // Make sure Maven is installed in Jenkins Tools
-            }
             steps {
                 sh 'mvn clean package -DskipTests'
             }
@@ -26,46 +27,33 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                script {
-                    sh 'docker build -t $DOCKER_USER/spring-boot-app:latest .'
-                }
+                sh 'docker build -t $DOCKER_USER/spring-boot-app:latest .'
             }
         }
 
         stage('Docker Push') {
             steps {
-                withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push $DOCKER_USER/spring-boot-app:latest
-                    '''
+                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push $DOCKER_USER/spring-boot-app:latest'
                 }
             }
         }
 
         stage('Trivy Scan') {
             steps {
-                sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL $DOCKER_USER/spring-boot-app:latest || true'
+                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_USER/spring-boot-app:latest'
             }
         }
     }
 
     post {
         always {
-            echo "Pipeline finished. Sending email..."
             emailext(
-                to: "${EMAIL_RECIPIENT}",
-                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Pipeline finished. Check console output at ${env.BUILD_URL}"
+                subject: "Jenkins Build - ${currentBuild.fullDisplayName}",
+                body: "Pipeline finished. Check console output: ${env.BUILD_URL}",
+                to: "${EMAIL}"
             )
-        }
-
-        success {
-            echo "✅ Build Succeeded!"
-        }
-
-        failure {
-            echo "❌ Build Failed!"
         }
     }
 }
