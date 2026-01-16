@@ -26,9 +26,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
@@ -43,35 +41,27 @@ pipeline {
 
         stage('Trivy Scan') {
             steps {
-                script {
-                    sh "trivy image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_IMAGE}"
-                }
+                sh "trivy image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_IMAGE}"
             }
         }
     }
 
     post {
         always {
-            node {
-                echo "Archiving Trivy report..."
-                archiveArtifacts artifacts: 'trivy-image-report.txt', fingerprint: true
-            }
+            echo "Archiving Trivy report..."
+            archiveArtifacts artifacts: 'trivy-image-report.txt', fingerprint: true
         }
 
         success {
-            node {
-                emailext subject: "✅ Build Successful - ${JOB_NAME} #${BUILD_NUMBER}",
-                         body: "Spring Boot app built, Docker image pushed, and Trivy scan completed successfully.",
-                         to: "vishalmath2605@gmail.com"
-            }
+            emailext subject: "✅ Build Successful - ${JOB_NAME} #${BUILD_NUMBER}",
+                     body: "Spring Boot app built, Docker image pushed, and Trivy scan completed successfully.",
+                     to: "vishalmath2605@gmail.com"
         }
 
         failure {
-            node {
-                emailext subject: "❌ Build Failed - ${JOB_NAME} #${BUILD_NUMBER}",
-                         body: "Build, Docker push, or Trivy scan failed. Check Jenkins logs for details.",
-                         to: "vishalmath2605@gmail.com"
-            }
+            emailext subject: "❌ Build Failed - ${JOB_NAME} #${BUILD_NUMBER}",
+                     body: "Build, Docker push, or Trivy scan failed. Check Jenkins logs for details.",
+                     to: "vishalmath2605@gmail.com"
         }
     }
 }
