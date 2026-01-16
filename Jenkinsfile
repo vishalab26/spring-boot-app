@@ -41,15 +41,17 @@ pipeline {
 
         stage('Trivy Scan') {
             steps {
-                sh "trivy image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_IMAGE}"
+                sh "trivy image --format table --output trivy-image-report.txt --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_IMAGE}"
             }
         }
     }
 
     post {
         always {
-            echo "Archiving Trivy report..."
-            archiveArtifacts artifacts: 'trivy-image-report.txt', fingerprint: true
+            node {
+                echo "Archiving Trivy report..."
+                archiveArtifacts artifacts: 'trivy-image-report.txt', fingerprint: true
+            }
         }
 
         success {
