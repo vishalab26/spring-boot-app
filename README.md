@@ -63,7 +63,7 @@ spring-boot-app/
 └── README.md
 
 
-<img width="707" height="691" alt="image" src="https://github.com/user-attachments/assets/a59f1157-cd35-4bdf-ab45-cdf6239b1633" />
+<img width="468" height="455" alt="image" src="https://github.com/user-attachments/assets/ca15e6ea-9651-442a-8f98-7d33372c9a1c" />
 
 
 ---
